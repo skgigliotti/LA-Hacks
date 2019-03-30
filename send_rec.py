@@ -24,5 +24,13 @@ def sms_ahoy_reply():
 
     return str(resp)
 
+""" Purpose: Allows student/requester to schedule an appointment. """
+def schedule_appointment():
+    return()
+
+""" Purpose: Allows program to modify advisor's calender. """
+def authenticate():
+    return()
+
 if __name__ == "__main__":
     app.run(debug=True)
