@@ -102,7 +102,7 @@ def authenticate():
 
 """ Purpose: Get office hours based on Professor's last name. """
 def get_hours(lastname):
-    professor = db.collection(u'Professors').where(u'lastname', u'==', u'Huff').limit(1)
+    professor = db.collection(u'Professors').where(u'lastname', u'==', lastname).limit(1)
 
     return(professor.get(u'hours'))
 
