@@ -281,4 +281,4 @@ if __name__ == "__main__":
     #creds = authenticate() # get credentials for google account
     #service = build('calendar', 'v3', credentials=creds) # manipulate google calendar
     #schedule_appointment()
-    #app.run(debug=True)
+    app.run(debug=True)
