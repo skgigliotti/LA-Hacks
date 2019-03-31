@@ -30,10 +30,23 @@ app = Flask(__name__)
 @app.route("/sms", methods=['GET', 'POST'])
 def sms_request():
     #send msg to the server to get appt times back
-    resp = MessagingResponse()
-    msg = request.values.get('Body')
-    resp.message(get_hours(msg))
 
+    resp = MessagingResponse()
+    msg = request.values.get('Body').lower().strip()
+    if (msg == 'office hours'):
+        name = request.values.get('Body').strip()
+        name.message(get_hours(name))
+
+    if (msg == 'appt' || msg == 'appointment'):
+        name = request.values.get('Body').strip()
+        resp.message(get_slots(name))
+        resp.message("Please select a time and enter it in the format DOW Month Day Time")
+        time = request.values.get('Body')
+        valid = check_slot(name,time)
+        while(valid == "false"):
+            resp.message("Sorry, the time has been taken. Please choose again.")
+            resp.message(get_slots(name))
+        resp.message("Congratulations. You have made an appointment")
     return str(resp)
 
 
