@@ -38,6 +38,22 @@ def sms_request():
     print(params)
     resp.message(check_slot(params[0], params[1]))
 
+    resp = MessagingResponse()
+    msg = request.values.get('Body').lower().strip()
+    if (msg == 'office hours'):
+        name = request.values.get('Body').strip()
+        name.message(get_hours(name))
+
+    if (msg == 'appt' || msg == 'appointment'):
+        name = request.values.get('Body').strip()
+        resp.message(get_slots(name))
+        resp.message("Please select a time and enter it in the format DOW Month Day Time")
+        time = request.values.get('Body')
+        valid = check_slot(name,time)
+        while(valid == "false"):
+            resp.message("Sorry, the time has been taken. Please choose again.")
+            resp.message(get_slots(name))
+        resp.message("Congratulations. You have made an appointment")
     return str(resp)
 
 
