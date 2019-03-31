@@ -30,43 +30,35 @@ app = Flask(__name__)
 @app.route("/sms", methods=['GET', 'POST'])
 def sms_request():
     #send msg to the server to get appt times back
-    resp = MessagingResponse()
-    msg = request.values.get('Body')
-    #resp.message(get_hours(msg))
-    #resp.message(get_slots(msg))
-    params = msg.split(None, 1)
-    print(params)
-    resp.message(check_slot(params[0], params[1]))
 
     resp = MessagingResponse()
-    msg = request.values.get('Body').lower().strip()
-    if (msg == 'office hours'):
-        name = request.values.get('Body').strip()
-        name.message(get_hours(name))
+    msg = request.values.get('Body').lower()
+    params = msg.split(None, 2) # 0: command, 1: professor last name, 2: date
+    if(params[0] == 'h'):
+        resp.message('Commands:')
+        resp.message('info: grabs office info for a professor\nex info Patterson')
+        resp.message('appts/appointments: lists available appointment times\nex appts Patterson')
+        resp.message('schedule: reserves and appointment with a professor\nex schedule Patterson mon 12 31 5')
+    if (params[0] == 'info'):
+        resp.message(get_hours(params[1]))
 
-    if (msg == 'appt' || msg == 'appointment'):
-        name = request.values.get('Body').strip()
-        resp.message(get_slots(name))
-        resp.message("Please select a time and enter it in the format DOW Month Day Time")
-        time = request.values.get('Body')
-        valid = check_slot(name,time)
-        while(valid == "false"):
-            resp.message("Sorry, the time has been taken. Please choose again.")
-            resp.message(get_slots(name))
-        resp.message("Congratulations. You have made an appointment")
+    if(params[0] == 'appts' or params[0] == 'appointments'):
+        if(len(params) > 1):
+            resp.message(get_slots(params[1]))
+        else:
+            resp.message('Please try again with a professor\'s last name.')
+
+    if (params[0] == 'schedule'):
+        if(len(params) > 2):
+            valid = check_slot(params[1], params[2])
+            if(valid == 'false'):
+                resp.message('Sorry, the time has been taken. Please try again.')
+            else:
+                resp.message('Congratulations. You have made an appointment.')
+        else:
+            resp.message('Please try again with a professor\'s last name and a date.')
+
     return str(resp)
-
-
-
-""" Purpose: Get office hours based on Professor's last name. """
-def get_hours(lastname):
-    professor_ref= db.collection(u'Professors').where(u'`last name`', u'==', lastname).limit(1)
-    professors = professor_ref.get()
-
-    for p in professors:
-        return("{}".format(p.get(u'phone')))
-    #my_dict = { el.id: el.to_dict() for el in professor }
-    #print(my_dict)
 
     #return('results: {}'.format(professor.to_dict()))
 """ Purpose: Allows student/requester to schedule an appointment. """
@@ -138,7 +130,7 @@ def get_hours(lastname):
     info = ''
 
     try:
-        professors_ref = db.collection(u'Professors').where(u'`last name`', u'==', lastname)
+        professors_ref = db.collection(u'Professors').where(u'`last name`', u'==', lastname.capitalize())
         professors = professors_ref.get()
 
         for p in professors:
@@ -154,7 +146,7 @@ def get_hours(lastname):
 
 def get_slots(lastname):
     info = ''
-    professors_ref = db.collection(u'Professors').where(u'`last name`', u'==', lastname)
+    professors_ref = db.collection(u'Professors').where(u'`last name`', u'==', lastname.capitalize())
     professors = professors_ref.get()
 
     for p in professors:
@@ -173,7 +165,7 @@ def check_slot(lastname, slot):
     params = slot.split() # 0: day of week, 1: month 2: day, 3: time
     print(params)
 
-    professors_ref = db.collection(u'Professors').where(u'`last name`', u'==', lastname)
+    professors_ref = db.collection(u'Professors').where(u'`last name`', u'==', lastname.capitalize())
     professors = professors_ref.get()
 
     """ check entered appointment slot exists """
@@ -182,12 +174,12 @@ def check_slot(lastname, slot):
             days = p.reference.collection(u'Days').get()
             if('{}'.format(p.get(u'`last name`')) == lastname):
                 for d in days:
-                    if('{}'.format(d.get(u'day')) == params )
-                    slots = d.reference.collection(u'StartTimes').order_by(u'time').get()
-                    for s in slots:
-                        if('{}'.format(s.get(u'time')) == params[3]):
-                            available = 'true'
-                            break
+                    if('{}'.format(d.get(u'day')) == params[0]):
+                        slots = d.reference.collection(u'StartTimes').order_by(u'time').get()
+                        for s in slots:
+                            if('{}'.format(s.get(u'time')) == params[3]):
+                                available = 'true'
+                                break
 
     return(available)
 
