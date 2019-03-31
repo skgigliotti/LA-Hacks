@@ -32,8 +32,11 @@ def sms_request():
     #send msg to the server to get appt times back
     resp = MessagingResponse()
     msg = request.values.get('Body')
-    resp.message(get_hours(msg))
-    resp.message(get_slots(msg))
+    #resp.message(get_hours(msg))
+    #resp.message(get_slots(msg))
+    params = msg.split(None, 1)
+    print(params)
+    resp.message(check_slot(params[0], params[1]))
 
     return str(resp)
 
@@ -149,6 +152,28 @@ def get_slots(lastname):
 
     return(info)
 
+def check_slot(lastname, slot):
+    available = 'false'
+    params = slot.split() # 0: day of week, 1: month 2: day, 3: time
+    print(params)
+
+    professors_ref = db.collection(u'Professors').where(u'`last name`', u'==', lastname)
+    professors = professors_ref.get()
+
+    """ check entered appointment slot exists """
+    if (len(params) == 4): # user should have entered 4 arguments
+        for p in professors:
+            days = p.reference.collection(u'Days').get()
+            if('{}'.format(p.get(u'`last name`')) == lastname):
+                for d in days:
+                    if('{}'.format(d.get(u'day')) == params )
+                    slots = d.reference.collection(u'StartTimes').order_by(u'time').get()
+                    for s in slots:
+                        if('{}'.format(s.get(u'time')) == params[3]):
+                            available = 'true'
+                            break
+
+    return(available)
 
 if __name__ == "__main__":
     cred = credentials.Certificate('la-hacks-63a19-4ac45eadbfb8.json')
