@@ -169,6 +169,7 @@ if __name__ == "__main__":
         u'department':u'History'
     })
     """
+    """
     doc_ref = db.collection(u'Professors').document()
     doc_ref.set({
         u'last name': u'Patterson',
@@ -263,6 +264,7 @@ if __name__ == "__main__":
     doc_ref3.set({
         u'time': u'15'
     })
+    """
     print(get_hours('Anderson'))
     #creds = authenticate() # get credentials for google account
     #service = build('calendar', 'v3', credentials=creds) # manipulate google calendar
