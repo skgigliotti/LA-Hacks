@@ -100,6 +100,12 @@ def authenticate():
 
     return(creds)
 
+""" Purpose: Get office hours based on Professor's last name. """
+def get_hours(lastname):
+    professor = db.collection(u'Professors').where(u'lastname', u'==', u'Huff').limit(1)
+
+    return(professor.get(u'hours'))
+
 if __name__ == "__main__":
     cred = credentials.Certificate('la-hacks-63a19-4ac45eadbfb8.json')
     firebase_admin.initialize_app(cred, {
@@ -108,12 +114,15 @@ if __name__ == "__main__":
 
     db = firestore.client()
 
-    doc_ref = db.collection(u'Professors').document(u'Hunter')
+    doc_ref = db.collection(u'Professors').document()
     doc_ref.set({
-        u'last name': u'Hunter',
-        u'first name': u'David',
-        u'office': u'Winter Hall'
+        u'last name': u'Huff',
+        u'first name': u'Nathan',
+        u'office': u'Adams',
+        u'hours': u'M 11 13'
     })
+
+    print(get_hours('Huff'))
     #creds = authenticate() # get credentials for google account
     #service = build('calendar', 'v3', credentials=creds) # manipulate google calendar
     #schedule_appointment()
