@@ -11,13 +11,16 @@ from flask import Flask, request
 from twilio.twiml.messaging_response import MessagingResponse
 import datetime
 import pickle
+import os
 import os.path
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 import firebase_admin
 from firebase_admin import credentials
+
 from firebase_admin import firestore
+
 
 # If modifying these scopes, delete the file token.pickle.
 SCOPES = ['https://www.googleapis.com/auth/calendar']
@@ -101,19 +104,61 @@ def authenticate():
     return(creds)
 
 if __name__ == "__main__":
-    cred = credentials.Certificate('la-hacks-63a19-4ac45eadbfb8.json')
+    cred = credentials.Certificate('la-hacks-63a19-f22136fba994.json')
     firebase_admin.initialize_app(cred, {
         'projectId': 'la-hacks-63a19',
     })
 
     db = firestore.client()
 
-    doc_ref = db.collection(u'Professors').document(u'Hunter')
+    doc_ref = db.collection(u'Professors').document()
+    doc_ref.set({
+        u'last name': u'Patterson',
+        u'first name': u'Donald',
+        u'office': u'WH-305',
+        u'phone' : u'18051234567',
+        u'department':u'Computer Science'
+
+
+    })
+
+    doc_ref = db.collection(u'Professors').document()
     doc_ref.set({
         u'last name': u'Hunter',
         u'first name': u'David',
-        u'office': u'Winter Hall'
+        u'office': u'WH-301',
+        u'phone' : u'18055671234',
+        u'department':u'Mathematics'
     })
+
+    doc_ref = db.collection(u'Professors').document()
+    doc_ref.set({
+        u'last name': u'Cardoso',
+        u'first name': u'Dinora',
+        u'office': u'REY-202',
+        u'phone' : u'18052349998',
+        u'department':u'Spanish'
+    })
+
+    doc_ref = db.collection(u'Professors').document()
+    doc_ref.set({
+        u'last name': u'Anderson',
+        u'first name': u'Scott',
+        u'office': u'ADM-104',
+        u'phone' : u'18054649998',
+        u'department':u'Art'
+    })
+
+    doc_ref = db.collection(u'Professors').document()
+    doc_ref.set({
+        u'last name': u'Mallampalli',
+        u'first name': u'Chandra',
+        u'office': u'DNE-205',
+        u'phone' : u'18054649998',
+        u'department':u'History'
+    })
+
+
     #creds = authenticate() # get credentials for google account
     #service = build('calendar', 'v3', credentials=creds) # manipulate google calendar
     #schedule_appointment()
