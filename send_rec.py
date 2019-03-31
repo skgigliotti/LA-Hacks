@@ -32,6 +32,7 @@ def sms_request():
     #send msg to the server to get appt times back
 
     resp = MessagingResponse()
+<<<<<<< HEAD
     msg = request.values.get('Body').lower()
     params = msg.split(None, 2) # 0: command, 1: professor last name, 2: date
     if(params[0] == 'h'):
@@ -57,6 +58,31 @@ def sms_request():
                 resp.message('Congratulations. You have made an appointment.')
         else:
             resp.message('Please try again with a professor\'s last name and a date.')
+=======
+    msg = request.values.get('Body').lower().strip()
+    if (msg == 'office hours'):
+        name = request.values.get('Body').strip()
+        resp.message(get_hours(name))
+
+    if (msg == 'appt' or msg == 'appointment'):
+        name = request.values.get('Body').strip()
+        resp.message(get_slots(name))
+        resp.message("Please select a time and enter it in the format DOW Month Day Time")
+        time = request.values.get('Body')
+        valid = check_slot(name,time)
+        while(valid == "false"):
+            resp.message("Sorry, the time has been taken. Please choose again.")
+            resp.message(get_slots(name))
+        resp.message("Congratulations. You have made an appointment")
+    return str(resp)
+
+
+
+""" Purpose: Get office hours based on Professor's last name. """
+def get_hours(lastname):
+    professor_ref= db.collection(u'Professors').where(u'`last name`', u'==', lastname).limit(1)
+    professors = professor_ref.get()
+>>>>>>> b71579db7359a4d85b76fd49a96250509f74b11a
 
     return str(resp)
 
