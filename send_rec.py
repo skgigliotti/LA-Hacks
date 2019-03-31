@@ -33,6 +33,7 @@ def sms_request():
     resp = MessagingResponse()
     msg = request.values.get('Body')
     resp.message(get_hours(msg))
+    resp.message(get_slots(msg))
 
     return str(resp)
 
@@ -115,18 +116,39 @@ def authenticate():
 
 """ Purpose: Get office hours based on Professor's last name. """
 def get_hours(lastname):
+    info = ''
+
+    try:
+        professors_ref = db.collection(u'Professors').where(u'`last name`', u'==', lastname)
+        professors = professors_ref.get()
+
+        for p in professors:
+            days = p.reference.collection(u'Days').get()
+            for d in days:
+                info = info + '{}: '.format(d.get(u'day'))
+                info = info + '{}\n'.format(d.get(u'`office hours`'))
+            info = info + '{}'.format(p.get(u'office'))
+    except: #google.cloud.exceptions.NotFound:
+        print(u'No such document!')
+
+    return(info)
+
+def get_slots(lastname):
+    info = ''
     professors_ref = db.collection(u'Professors').where(u'`last name`', u'==', lastname)
     professors = professors_ref.get()
-    info = ''
 
     for p in professors:
         days = p.reference.collection(u'Days').get()
         for d in days:
-            info = info + '{}: '.format(d.get(u'day'))
-            info = info + '{}\n'.format(d.get(u'`office hours`'))
+            slots = d.reference.collection(u'StartTimes').order_by(u'time').get()
+            for s in slots:
+                info = info + '{} '.format(d.get(u'day'))
+                info = info + '{}\n'.format(s.get(u'time'))
         info = info + '{}'.format(p.get(u'office'))
 
     return(info)
+
 
 if __name__ == "__main__":
     cred = credentials.Certificate('la-hacks-63a19-4ac45eadbfb8.json')
