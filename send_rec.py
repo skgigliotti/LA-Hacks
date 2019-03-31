@@ -15,6 +15,9 @@ import os.path
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
+import firebase_admin
+from firebase_admin import credentials
+from firebase_admin import firestore
 
 # If modifying these scopes, delete the file token.pickle.
 SCOPES = ['https://www.googleapis.com/auth/calendar']
@@ -64,7 +67,7 @@ def schedule_appointment():
       },
     }
 
-    event = service.events().insert(calendarId='primary', body=event).execute()
+    #event = service.events().insert(calendarId='primary', body=event).execute()
     print ('Event created: %s' % (event.get('htmlLink')))
 
     # Call the Calendar API
@@ -98,7 +101,20 @@ def authenticate():
     return(creds)
 
 if __name__ == "__main__":
-    creds = authenticate() # get credentials for google account
-    service = build('calendar', 'v3', credentials=creds) # manipulate google calendar
-    schedule_appointment()
+    cred = credentials.Certificate('la-hacks-63a19-4ac45eadbfb8.json')
+    firebase_admin.initialize_app(cred, {
+        'projectId': 'la-hacks-63a19',
+    })
+
+    db = firestore.client()
+
+    doc_ref = db.collection(u'Professors').document(u'Hunter')
+    doc_ref.set({
+        u'last name': u'Hunter',
+        u'first name': u'David',
+        u'office': u'Winter Hall'
+    })
+    #creds = authenticate() # get credentials for google account
+    #service = build('calendar', 'v3', credentials=creds) # manipulate google calendar
+    #schedule_appointment()
     #app.run(debug=True)
