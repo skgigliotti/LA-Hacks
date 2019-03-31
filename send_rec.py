@@ -106,15 +106,18 @@ def authenticate():
 
 """ Purpose: Get office hours based on Professor's last name. """
 def get_hours(lastname):
-    professor_ref= db.collection(u'Professors').where(u'`last name`', u'==', lastname).limit(1)
-    professors = professor_ref.get()
+    professors_ref = db.collection(u'Professors').where(u'`last name`', u'==', lastname)
+    professors = professors_ref.get()
+    info = ''
 
     for p in professors:
-        return("{}".format(p.get(u'phone')))
-    #my_dict = { el.id: el.to_dict() for el in professor }
-    #print(my_dict)
+        days = p.reference.collection(u'Days').get()
+        for d in days:
+            info = info + '{}: '.format(d.get(u'day'))
+            info = info + '{}\n'.format(d.get(u'`office hours`'))
+        info = info + '{}'.format(p.get(u'office'))
 
-    #return('results: {}'.format(professor.to_dict()))
+    return(info)
 
 if __name__ == "__main__":
     cred = credentials.Certificate('la-hacks-63a19-4ac45eadbfb8.json')
@@ -265,7 +268,7 @@ if __name__ == "__main__":
         u'time': u'15'
     })
     """
-    print(get_hours('Anderson'))
+    #print(get_hours('Anderson'))
     #creds = authenticate() # get credentials for google account
     #service = build('calendar', 'v3', credentials=creds) # manipulate google calendar
     #schedule_appointment()
