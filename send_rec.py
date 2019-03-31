@@ -103,20 +103,27 @@ def authenticate():
 
     return(creds)
 
+
 """ Purpose: Get office hours based on Professor's last name. """
 def get_hours(lastname):
-    professor = db.collection(u'Professors').where(u'lastname', u'==', lastname).limit(1)
+    professor_ref= db.collection(u'Professors').where(u'`last name`', u'==', lastname).limit(1)
+    professors = professor_ref.get()
 
-    return(professor.get(u'hours'))
+    for p in professors:
+        return("{}".format(p.get(u'phone')))
+    #my_dict = { el.id: el.to_dict() for el in professor }
+    #print(my_dict)
+
+    #return('results: {}'.format(professor.to_dict()))
 
 if __name__ == "__main__":
-    cred = credentials.Certificate('la-hacks-63a19-f22136fba994.json')
+    cred = credentials.Certificate('la-hacks-63a19-4ac45eadbfb8.json')
     firebase_admin.initialize_app(cred, {
         'projectId': 'la-hacks-63a19',
     })
 
     db = firestore.client()
-
+    """
     doc_ref = db.collection(u'Professors').document()
     doc_ref.set({
         u'last name': u'Patterson',
@@ -124,8 +131,6 @@ if __name__ == "__main__":
         u'office': u'WH-305',
         u'phone' : u'18051234567',
         u'department':u'Computer Science'
-
-
     })
 
     doc_ref = db.collection(u'Professors').document()
@@ -163,8 +168,102 @@ if __name__ == "__main__":
         u'phone' : u'18054649998',
         u'department':u'History'
     })
+    """
+    doc_ref = db.collection(u'Professors').document()
+    doc_ref.set({
+        u'last name': u'Patterson',
+        u'first name': u'Donald',
+        u'office': u'WH-305',
+        u'phone' : u'18051234567',
+        u'department':u'Computer Science'
 
 
+    })
+    doc_ref2 = doc_ref.collection(u'Days').document(u'Wednesday')
+    doc_ref2.set({
+        u'day': u'Wed'
+    })
+    doc_ref3 = doc_ref2.collection(u'StartTimes').document()
+    doc_ref3.set({
+        u'time': u'9'
+    })
+
+    doc_ref = db.collection(u'Professors').document()
+    doc_ref.set({
+        u'last name': u'Hunter',
+        u'first name': u'David',
+        u'office': u'WH-301',
+        u'phone' : u'18055671234',
+        u'department':u'Mathematics'
+    })
+    doc_ref2 = doc_ref.collection(u'Days').document(u'Friday')
+    doc_ref2.set({
+        u'day': u'Fri'
+    })
+    doc_ref3 = doc_ref2.collection(u'StartTimes').document()
+    doc_ref3.set({
+        u'time': u'15'
+    })
+
+    doc_ref = db.collection(u'Professors').document()
+    doc_ref.set({
+        u'last name': u'Cardoso',
+        u'first name': u'Dinora',
+        u'office': u'REY-202',
+        u'phone' : u'18052349998',
+        u'department':u'Spanish'
+    })
+    doc_ref2 = doc_ref.collection(u'Days').document(u'Wednesday')
+    doc_ref2.set({
+        u'day': u'Wed'
+    })
+    doc_ref3 = doc_ref2.collection(u'StartTimes').document()
+    doc_ref3.set({
+        u'time': u'12'
+    })
+
+    doc_ref = db.collection(u'Professors').document()
+    doc_ref.set({
+        u'last name': u'Anderson',
+        u'first name': u'Scott',
+        u'office': u'ADM-104',
+        u'phone' : u'18054649998',
+        u'department':u'Art'
+    })
+    doc_ref2 = doc_ref.collection(u'Days').document(u'Monday')
+    doc_ref2.set({
+        u'day': u'Mon'
+    })
+    doc_ref3 = doc_ref2.collection(u'StartTimes').document()
+    doc_ref3.set({
+        u'time': u'15'
+    })
+    doc_ref2 = doc_ref.collection(u'Days').document(u'Friday')
+    doc_ref2.set({
+        u'day': u'Fri'
+    })
+    doc_ref3 = doc_ref2.collection(u'StartTimes').document()
+    doc_ref3.set({
+        u'time': u'16'
+    })
+
+    doc_ref = db.collection(u'Professors').document()
+    doc_ref.set({
+        u'last name': u'Docter',
+        u'first name': u'Mary',
+        u'office': u'REY-205',
+        u'phone' : u'18054649998',
+        u'department':u'Spanish'
+    })
+    doc_ref2 = doc_ref.collection(u'Days').document(u'Wednesday')
+    doc_ref2.set({
+        u'day': u'Wed'
+    })
+    doc_ref3 = doc_ref2.collection(u'StartTimes').document()
+    doc_ref3.set({
+        u'time': u'15'
+    })
+    print(get_hours('Anderson'))
     #creds = authenticate() # get credentials for google account
     #service = build('calendar', 'v3', credentials=creds) # manipulate google calendar
     #schedule_appointment()
