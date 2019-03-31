@@ -42,9 +42,9 @@ def sms_request():
     msg = request.values.get('Body').lower().strip()
     if (msg == 'office hours'):
         name = request.values.get('Body').strip()
-        name.message(get_hours(name))
+        resp.message(get_hours(name))
 
-    if (msg == 'appt' || msg == 'appointment'):
+    if (msg == 'appt' or msg == 'appointment'):
         name = request.values.get('Body').strip()
         resp.message(get_slots(name))
         resp.message("Please select a time and enter it in the format DOW Month Day Time")
@@ -182,12 +182,12 @@ def check_slot(lastname, slot):
             days = p.reference.collection(u'Days').get()
             if('{}'.format(p.get(u'`last name`')) == lastname):
                 for d in days:
-                    if('{}'.format(d.get(u'day')) == params )
-                    slots = d.reference.collection(u'StartTimes').order_by(u'time').get()
-                    for s in slots:
-                        if('{}'.format(s.get(u'time')) == params[3]):
-                            available = 'true'
-                            break
+                    if('{}'.format(d.get(u'day')) == params ):
+                        slots = d.reference.collection(u'StartTimes').order_by(u'time').get()
+                        for s in slots:
+                            if('{}'.format(s.get(u'time')) == params[3]):
+                                available = 'true'
+                                break
 
     return(available)
 
