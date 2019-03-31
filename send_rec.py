@@ -22,18 +22,27 @@ SCOPES = ['https://www.googleapis.com/auth/calendar']
 app = Flask(__name__)
 
 @app.route("/sms", methods=['GET', 'POST'])
-def sms_ahoy_reply():
-    """Respond to incoming messages with a friendly SMS."""
-    # Start our response
-    #message_body = request.form['Body']
+def sms_request():
+    #send msg to the server to get appt times back
     resp = MessagingResponse()
-    #print(message_body)
-
-    # Add a message
-    resp.message("Ahoy! Thanks so much for your message. You said: ")
+    msg = request.values.get('Body')
+    resp.message(get_hours(msg))
 
     return str(resp)
 
+
+
+""" Purpose: Get office hours based on Professor's last name. """
+def get_hours(lastname):
+    professor_ref= db.collection(u'Professors').where(u'`last name`', u'==', lastname).limit(1)
+    professors = professor_ref.get()
+
+    for p in professors:
+        return("{}".format(p.get(u'phone')))
+    #my_dict = { el.id: el.to_dict() for el in professor }
+    #print(my_dict)
+
+    #return('results: {}'.format(professor.to_dict()))
 """ Purpose: Allows student/requester to schedule an appointment. """
 def schedule_appointment():
     event = {
